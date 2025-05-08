@@ -79,7 +79,7 @@ Once the server is running, test the following endpoints:
 
 - **Root Endpoint**: Visit `http://localhost:8000/` to see:
   ```json
-  {"Hello": "World"}
+  "Hello World"
   ```
 
 - **Item Endpoint**: Visit `http://localhost:8000/items/5?q=somequery` to see:
@@ -107,7 +107,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return "Hello World"
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str | None = None):
