@@ -19,10 +19,10 @@ async def main():
 @app.get("/items/{item_id}")
 async def read_item(
     item_id: int = Path(
-        ...,
+        ...,  # Means the parameter is required
         title="The Id Of The Item",
         description="A unique identifier for the item",
-        ge=1,
+        ge=1,  # greater then equal to 1
     )
 ):
     return {"item_id": item_id}
@@ -31,7 +31,7 @@ async def read_item(
 @app.get("/items/")
 async def read_items(
     q: str | None = Query(
-        None,
+        None,  # for optional parameter default value is None
         title="Query String",
         description="Query string for searching items",
         min_length=3,
