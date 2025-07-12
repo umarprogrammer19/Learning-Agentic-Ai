@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Path, Query, Body
 from pydantic import BaseModel
 
-
+# Call the Fast Api
 app = FastAPI()
 
 
@@ -10,12 +10,13 @@ class Item(BaseModel):
     description: str | None = None
     price: float
 
-
+# Get route
 @app.get("/")
 async def main():
     return {"message": "I am Learning Path Patameters"}
 
 
+# For getting items by if the id is path parameter
 @app.get("/items/{item_id}")
 async def read_item(
     item_id: int = Path(
