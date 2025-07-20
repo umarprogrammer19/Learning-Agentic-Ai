@@ -1,6 +1,15 @@
 from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunConfig
 from dotenv import load_dotenv
 import os
+import asyncio
+
+# [User Input]
+#      ↓
+# [Triage Agent] → Decides topic (e.g. "finance")
+#      ↓
+# [FinanceAgent / CodeAgent / TravelAgent] → Returns answer
+#      ↓
+# Final Output (sent to user)
 
 load_dotenv()
 
@@ -17,10 +26,56 @@ model = OpenAIChatCompletionsModel(
 
 config = RunConfig(model=model, model_provider=external_client, tracing_disabled=True)
 
-agent = Agent(name="Assistant", instructions="You are a powerfull assistant")
-
-result = Runner.run_sync(
-    agent, "Write a haiku about recursion in programming.", run_config=config
+# Agent A Financ eBot
+finance_agent = Agent(
+    name="FinanceBot", instructions="You only answer finance questions."
 )
 
-print(result.final_output)
+# Agent B: Code bot
+code_agent = Agent(
+    name="CodeBot", instructions="You only answer programming questions."
+)
+
+# Specialist Agent: History
+history_tutor_agent = Agent(
+    name="History Tutor",
+    handoff_description="Specialist agent for historical questions",
+    instructions="You provide assistance with historical queries. Explain important events and context clearly.",
+)
+
+# Specialist Agent: Math
+math_tutor_agent = Agent(
+    name="Math Tutor",
+    handoff_description="Specialist agent for math questions",
+    instructions="You provide help with math problems. Explain your reasoning at each step and include examples.",
+)
+
+# Triage Agent: Delegates to specialist agents based on question type
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions="You determine which agent to use based on the user's homework question.",
+    handoffs=[history_tutor_agent, math_tutor_agent],
+)
+
+
+# We can use handoffs like these also
+def route_agent(query: str):
+    if "invest" in query or "stock" in query:
+        return Runner.run_sync(finance_agent, query, run_config=config).final_output
+    return Runner.run_sync(code_agent, query, run_config=config).final_output
+
+
+# Usage
+print(route_agent("How to invest in crypto?"))
+print(route_agent("How to reverse a string in Python?"))
+
+
+async def main():
+    result = await Runner.run(
+        triage_agent, "What is the capital of France?", run_config=config
+    )
+    print("Final Output:", result.final_output)
+
+
+# Start the async runner
+asyncio.run(main())
