@@ -28,7 +28,7 @@ external_client = AsyncOpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",  # Gemini-compatible endpoint
 )
 
-# Define the model to use (Gemini 2.0 Flash)
+# Define the model to use i am using (Gemini 2.0 Flash)
 model = OpenAIChatCompletionsModel(
     openai_client=external_client, model="gemini-2.0-flash"
 )
@@ -49,29 +49,6 @@ code_agent = Agent(
     name="CodeBot", instructions="You only answer programming questions."
 )
 
-# Define agents for automatic handoff via triage agent
-
-# History Tutor: Handles history-related homework questions
-history_tutor_agent = Agent(
-    name="History Tutor",
-    handoff_description="Specialist agent for historical questions",  # Helps triage agent understand routing
-    instructions="You provide assistance with historical queries. Explain important events and context clearly.",
-)
-
-# Math Tutor: Handles math-related homework questions
-math_tutor_agent = Agent(
-    name="Math Tutor",
-    handoff_description="Specialist agent for math questions",
-    instructions="You provide help with math problems. Explain your reasoning at each step and include examples.",
-)
-
-# Triage Agent: Delegates to Math or History tutor automatically
-triage_agent = Agent(
-    name="Triage Agent",
-    instructions="You determine which agent to use based on the user's homework question.",
-    handoffs=[history_tutor_agent, math_tutor_agent],  # Handoff targets
-)
-
 # Manual Routing Logic
 # Function that manually chooses FinanceBot or CodeBot based on keywords
 
@@ -89,7 +66,7 @@ triage_agent = Agent(
 
 # Use Case:
 # - This approach is ideal when the decision-making is simple and based on a few known rules.
-# - It is **not dynamic or scalable** like the handoff system — but is fast and lightweight for binary choices.
+# - It is not dynamic or scalable like the handoff system but is fast and lightweight for binary choices.
 
 def route_agent(query: str) -> str:
     """
@@ -105,8 +82,32 @@ def route_agent(query: str) -> str:
 
 # Execute and print manual routing examples
 print("🔸 Manual Routing:")
-print("→", route_agent("How to invest in crypto?"))  # Routed to FinanceBot
-print("→", route_agent("How to reverse a string in Python?"))  # Routed to CodeBot
+print(route_agent("How to invest in crypto?"))  # Routed to FinanceBot
+print(route_agent("How to reverse a string in Python?"))  # Routed to CodeBot
+
+# For Handoffs and triage agent methods
+# Define agents for automatic handoff via triage agent
+
+# History Tutor: Handles history-related homework questions
+history_tutor_agent = Agent(
+    name="History Tutor",
+    handoff_description="Specialist agent for historical questions",  # Helps triage agent understand routing
+    instructions="You provide assistance with historical queries. Explain important events and context clearly.",
+)
+
+# Math Tutor: Handles math-related homework questions
+math_tutor_agent = Agent(
+    name="Math Tutor",
+    handoff_description="Specialist agent for math questions", # Helps triage agent understand routing
+    instructions="You provide help with math problems. Explain your reasoning at each step and include examples.",
+)
+
+# Triage Agent: Delegates to Math or History tutor automatically
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions="You determine which agent to use based on the user's homework question.",
+    handoffs=[history_tutor_agent, math_tutor_agent],  # Handoff targets uses these two according to the prompt 
+)
 
 # Execute and print result from triage-based handoff
 # TriageAgent will automatically forward the query to the appropriate sub-agent
