@@ -70,12 +70,7 @@ print(route_agent("How to invest in crypto?"))
 print(route_agent("How to reverse a string in Python?"))
 
 
-async def main():
-    result = await Runner.run(
-        triage_agent, "What is the capital of France?", run_config=config
-    )
-    print("Final Output:", result.final_output)
-
-
-# Start the async runner
-asyncio.run(main())
+result = Runner.run_sync(
+    triage_agent, "What is the capital of France?", run_config=config
+)
+print("Final Output:", result.final_output)
