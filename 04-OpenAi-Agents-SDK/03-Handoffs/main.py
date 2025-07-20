@@ -1,5 +1,5 @@
 from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunConfig
-from dotenv import load_dotenv  
+from dotenv import load_dotenv
 import os
 
 # [User Input]
@@ -53,7 +53,7 @@ code_agent = Agent(
 # Function that manually chooses FinanceBot or CodeBot based on keywords
 
 # Explanation: This is a simple, rule-based routing approach.
-# Instead of having a triage agent that decides dynamically, 
+# Instead of having a triage agent that decides dynamically,
 # we are using a Python function (`route_agent`) that applies keyword checks
 # to decide which agent (FinanceBot or CodeBot) should handle the task.
 
@@ -67,6 +67,7 @@ code_agent = Agent(
 # Use Case:
 # - This approach is ideal when the decision-making is simple and based on a few known rules.
 # - It is not dynamic or scalable like the handoff system but is fast and lightweight for binary choices.
+
 
 def route_agent(query: str) -> str:
     """
@@ -98,7 +99,7 @@ history_tutor_agent = Agent(
 # Math Tutor: Handles math-related homework questions
 math_tutor_agent = Agent(
     name="Math Tutor",
-    handoff_description="Specialist agent for math questions", # Helps triage agent understand routing
+    handoff_description="Specialist agent for math questions",  # Helps triage agent understand routing
     instructions="You provide help with math problems. Explain your reasoning at each step and include examples.",
 )
 
@@ -106,7 +107,10 @@ math_tutor_agent = Agent(
 triage_agent = Agent(
     name="Triage Agent",
     instructions="You determine which agent to use based on the user's homework question.",
-    handoffs=[history_tutor_agent, math_tutor_agent],  # Handoff targets uses these two according to the prompt 
+    handoffs=[
+        history_tutor_agent,
+        math_tutor_agent,
+    ],  # Handoff targets uses these two according to the prompt
 )
 
 # Execute and print result from triage-based handoff
