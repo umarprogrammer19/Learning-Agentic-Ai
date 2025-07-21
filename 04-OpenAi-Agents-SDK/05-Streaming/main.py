@@ -2,7 +2,7 @@ from agents import Agent, RunConfig, Runner
 from agents.extensions.models.litellm_model import LitellmModel
 from dotenv import find_dotenv, get_key
 
-api_key = get_key(find_dotenv, "GEMINI_API_KEY")
+api_key = get_key(find_dotenv(), "GEMINI_API_KEY")
 
 agent = Agent(
     name="Assistant",
