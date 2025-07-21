@@ -5,6 +5,7 @@ import requests
 from dotenv import find_dotenv, get_key
 
 GEMINI_API_KEY = get_key(find_dotenv(), "GEMINI_API_KEY")
+WEATHER_API_KEY = get_key(find_dotenv(), "WEATHER_API_KEY")
 
 
 # Define the Weather Fetching Function using function_tool decorator
@@ -16,7 +17,7 @@ def getWeather(city: str) -> str:
     """
     # Send a GET request to the WeatherAPI to retrieve current weather data
     result = requests.get(
-        f"http://api.weatherapi.com/v1/current.json?key=8e3aca2b91dc4342a1162608252604&q={city}"
+        f"http://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={city}"
     )
 
     # Check if the API request was successful
