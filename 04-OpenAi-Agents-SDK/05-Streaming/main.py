@@ -39,9 +39,7 @@ async def main():
             event.data, ResponseTextDeltaEvent
         ):
             # Print the text chunk (delta) from the event as it is generated
-            print(
-                event.data.delta, end="", flush=True
-            )  # Print the event data (essay text) without newline, flush output immediately
+            print(event.data.delta, end="", flush=True)
 
 
 asyncio.run(main())
