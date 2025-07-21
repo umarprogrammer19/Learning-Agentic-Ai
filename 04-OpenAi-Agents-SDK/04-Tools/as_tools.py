@@ -1,6 +1,5 @@
 from agents import Agent, Runner
 from config import config
-import asyncio
 
 spanish_agent = Agent(
     name="Spanish agent",
