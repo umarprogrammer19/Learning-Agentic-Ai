@@ -34,12 +34,12 @@ async def main():
 
     # Iterate over the events generated during the streaming process
     async for event in result.stream_events():
-        # Check if the event contains raw response text
+        # Check if the event contains raw response text or it is in the type of ResponseTextDeltaEvent
         if event.type == "raw_response_event" and isinstance(
             event.data, ResponseTextDeltaEvent
         ):
             # Print the text chunk (delta) from the event as it is generated
             print(event.data.delta, end="", flush=True)
 
-
+# run the function using asyncio because the function is asynchronous
 asyncio.run(main())
