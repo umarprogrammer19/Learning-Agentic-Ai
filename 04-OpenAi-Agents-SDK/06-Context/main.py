@@ -1,4 +1,4 @@
-from agents import Agent, Runner, RunConfig
+from agents import Agent, Runner, RunConfig, function_tool
 from agents.extensions.models.litellm_model import LitellmModel
 from dotenv import get_key, find_dotenv
 from dataclasses import dataclass
@@ -25,6 +25,26 @@ class UserContext:
                 Purchase(id="p2", name="Premium Add-on", price=4.99, date="2023-02-20"),
             ]
         return []
+
+
+@function_tool
+def get_user_info(context: UserContext) -> str:
+    """Get basic information about the current user"""
+    user_type = "pro" if context.is_pro_user else "Free"
+    return f"User ID: {context.uid}, Account Type: {user_type}"
+
+
+@function_tool
+async def get_purchase_history(context: UserContext) -> str:
+    """Get the purchase history for the current user"""
+    purchases = await context.fetch_purchases()
+    if not purchases:
+        return "No purchase history found."
+
+    result = "Purchase History:\n"
+    for p in purchases:
+        result += f"- {p.name}: ${p.price} on {p.date}\n"
+    return result
 
 
 api_key = get_key(find_dotenv(), "GEMINI_API_KEY")
