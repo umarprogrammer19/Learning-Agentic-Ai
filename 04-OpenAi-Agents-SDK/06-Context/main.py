@@ -47,6 +47,15 @@ async def get_purchase_history(context: UserContext) -> str:
     return result
 
 
+@function_tool
+async def get_personalized_greeting(context: UserContext) -> str:
+    """Get a personalized greeting based on user status"""
+    if context.is_pro_user:
+        return "Welcome back to our premium service! We value your continued support."
+    else:
+        return "Welcome! Consider upgrading to our Pro plan for additional features."
+
+
 api_key = get_key(find_dotenv(), "GEMINI_API_KEY")
 
 agent = Agent(
