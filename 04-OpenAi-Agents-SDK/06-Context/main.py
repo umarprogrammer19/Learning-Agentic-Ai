@@ -3,6 +3,7 @@ from agents.extensions.models.litellm_model import LitellmModel
 from dotenv import get_key, find_dotenv
 from dataclasses import dataclass
 from typing import List
+import asyncio
 
 
 @dataclass
@@ -31,16 +32,17 @@ class UserContext:
 def get_user_info(context: UserContext) -> str:
     """Get basic information about the current user"""
     user_type = "pro" if context.is_pro_user else "Free"
+    print(f"Context in get_user_info: {context}")
     return f"User ID: {context.uid}, Account Type: {user_type}"
 
 
 @function_tool
 async def get_purchase_history(context: UserContext) -> str:
     """Get the purchase history for the current user"""
+    print(f"Context in get_purchase_history: {context}")
     purchases = await context.fetch_purchases()
     if not purchases:
         return "No purchase history found."
-
     result = "Purchase History:\n"
     for p in purchases:
         result += f"- {p.name}: ${p.price} on {p.date}\n"
@@ -66,10 +68,34 @@ user_context_agent = Agent[UserContext](
     For pro users, offer more detailed information and premium suggestions.
     """,
     tools=[get_user_info, get_purchase_history, get_personalized_greeting],
+    model=LitellmModel(model="gemini/gemini-2.0-flash", api_key=api_key),
 )
 
 
-config = RunConfig(tracing_disabled=True)
+async def main():
+    # Create sample users
+    pro_user_context = UserContext(uid="user123", is_pro_user=True)
+    free_user_context = UserContext(uid="user456", is_pro_user=False)
+    config = RunConfig(tracing_disabled=True)
 
-result = Runner.run_sync(user_context_agent, "What is a capital of japan", run_config=config)
-print(result.final_output)
+    # Example with pro user
+    print("\n--- Pro User Example ---")
+    result = await Runner.run(
+        user_context_agent,
+        "Tell me about myself and my purchases",
+        context=pro_user_context,
+        run_config=config,
+    )
+    print("Response for Pro User:", result.final_output)
+
+    print("\n--- Free User Example ---")
+    result = await Runner.run(
+        user_context_agent,
+        "Tell me about myself and my purchases",
+        context=free_user_context,
+        run_config=config,
+    )
+    print("Response for Free User:", result.final_output)
+
+
+asyncio.run(main())
