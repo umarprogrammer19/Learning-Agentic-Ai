@@ -129,3 +129,34 @@ async def main():
 
 
 asyncio.run(main())
+
+# Code Breakdown:
+# Purchase and UserContext Classes:
+
+# Purchase: Holds information about a purchase (ID, name, price, date).
+
+# UserContext: Stores the uid (user ID) and is_pro_user (a flag to determine if the user is a pro user). It also contains the fetch_purchases method that simulates fetching the purchase history based on the user’s ID.
+
+# Function Tools (get_user_info, get_purchase_history, and get_personalized_greeting):
+
+# get_user_info: Returns a string with basic information about the user (ID and account type).
+
+# get_purchase_history: Fetches the purchase history for the user and returns it in a readable format.
+
+# get_personalized_greeting: Returns a personalized greeting message based on whether the user is a pro or not.
+
+# Agent Setup:
+
+# The Agent uses the model LitellmModel and is equipped with the function tools mentioned above.
+
+# The agent's instructions clearly guide how it should respond based on the UserContext provided. It ensures that the agent uses the context (such as is_pro_user) to give personalized responses.
+
+# Asynchronous Execution with asyncio:
+
+# main(): This function creates two user contexts (one for the Pro user and one for the Free user), runs the agent with each context, and prints the results.
+
+# The Runner.run() method is used to execute the agent's task, where it processes the user query and generates responses using the provided tools and context.
+
+# Output:
+
+# The output for the Pro user will include detailed purchase history, while the Free user will have no purchase history, but the agent suggests upgrading to a Pro plan.
