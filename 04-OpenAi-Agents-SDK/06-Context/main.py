@@ -58,13 +58,18 @@ async def get_personalized_greeting(context: UserContext) -> str:
 
 api_key = get_key(find_dotenv(), "GEMINI_API_KEY")
 
-agent = Agent(
-    name="Basic Agent",
-    instructions="you are a helpfull assistant",
-    model=LitellmModel(model="gemini/gemini-2.0-flash", api_key=api_key),
+user_context_agent = Agent[UserContext](
+    name="User Context Agent",
+    instructions="""
+    You are a helpful assistant that provides personalized responses based on user context.
+    Use the available tools to retrieve user information and provide tailored assistance.
+    For pro users, offer more detailed information and premium suggestions.
+    """,
+    tools=[get_user_info, get_purchase_history, get_personalized_greeting],
 )
+
 
 config = RunConfig(tracing_disabled=True)
 
-result = Runner.run_sync(agent, "What is a capital of japan", run_config=config)
+result = Runner.run_sync(user_context_agent, "What is a capital of japan", run_config=config)
 print(result.final_output)
