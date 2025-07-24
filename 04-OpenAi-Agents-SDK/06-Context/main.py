@@ -1,6 +1,15 @@
 from agents import Agent, Runner, RunConfig
 from agents.extensions.models.litellm_model import LitellmModel
 from dotenv import get_key, find_dotenv
+from dataclasses import dataclass
+
+
+class Purchase:
+    id: str
+    name: str
+    price: float
+    date: str
+
 
 api_key = get_key(find_dotenv(), "GEMINI_API_KEY")
 
