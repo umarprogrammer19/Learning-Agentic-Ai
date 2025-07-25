@@ -38,7 +38,8 @@ async def main():
         if event.type == "raw_response_event" and isinstance(
             event.data, ResponseTextDeltaEvent
         ):
-            # Print the text chunk (delta) from the event as it is generated
+            # Print the text chunk (delta) from the event as it is generated 
+            # *Answer in chunks
             print(event.data.delta, end="", flush=True)
 
 # run the function using asyncio because the function is asynchronous
