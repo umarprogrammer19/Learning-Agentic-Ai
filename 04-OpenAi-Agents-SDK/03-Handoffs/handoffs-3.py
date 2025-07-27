@@ -37,5 +37,49 @@ def check_refund_eligibility(booking_reference: str) -> str:
     else:
         return f"Booking {booking_reference} is not found in our records."    
      
+booking_agent = Agent(
+    name="Booking Agent",
+    instructions="""
+    You are a specialized booking agent for a travel company.
+    Help users book flights by collecting necessary information:
+    - Origin city
+    - Destination city
+    - Travel date
+    - Number of passengers
+    - Class of service (economy, business, first class)
+    - Budget (if applicable)
+    """,
+    tools=[get_available_flights]
+)
+
+refund_agent = Agent(
+    name="Refund Agent",
+    instructions="""
+    You are a specialized refund agent for a travel company.
+    Help users with refund requests by:
+    - Asking for their booking reference
+    - Explaining refund policies
+    - Checking eligibility using the check_refund_eligibility tool
+    
+    Be empathetic and clear about the refund process and timelines.
+    """,
+    tools=[check_refund_eligibility]
+)
 
 
+triage_agent = Agent(
+    name="Travel Assistant",
+    instructions="""
+    You are a helpful travel assistant that can help with various travel-related questions.
+    
+    If the user asks about booking flights or needs help with a new reservation,
+    hand off the conversation to the Booking Agent.
+    
+    If the user asks about refunds, cancellations, or reimbursements,
+    hand off the conversation to the Refund Agent.
+    
+    For general travel questions, answer directly without handing off.
+    Be friendly and helpful in all interactions.
+    """,
+    handoffs=[booking_agent, refund_agent]
+)
