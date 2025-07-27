@@ -1,4 +1,4 @@
-from config import config
+from config import config, model
 from agents import (
     Agent,
     Runner,
@@ -6,8 +6,10 @@ from agents import (
     RunContextWrapper,
     TResponseInputItem,
     GuardrailFunctionOutput,
+    InputGuardrailTripwireTriggered,
 )
 from pydantic import BaseModel
+import asyncio
 
 
 class MathHomeWorkOutput(BaseModel):
@@ -36,19 +38,47 @@ math_guardrail_agent = Agent(
     Provide clear reasoning for your decision.
     """,
     output_type=MathHomeWorkOutput,
+    model=model,
 )
 
 
-# @input_guardrail
-# async def math_guardrail(ctx: RunContextWrapper, agent: Agent, input: str | list[TResponseInputItem]) -> GuardailFunctionOutput:
+@input_guardrail
+async def math_guardrail(
+    ctx: RunContextWrapper, agent: Agent, input: str | list[TResponseInputItem]
+) -> GuardrailFunctionOutput:
+    result = await Runner.run(math_guardrail_agent, input)
 
-result = Runner.run_sync(
-    math_guardrail_agent,
-    "Find the value of x if 3x + 4 = 9 and x - y = 5 (This is my Math Homework)",
-    run_config=config,
+    return GuardrailFunctionOutput(
+        output_info=result.final_output,
+        tripwire_triggered=result.final_output.is_math_homework,
+    )
+
+
+tutor_agent = Agent(
+    name="Math Expert Agent",
+    instructions="You are a Math Expert Agent. You help student with their questions only math related.",
+    input_guardrails=[math_guardrail],
+    model=model,
 )
 
-print(result.final_output)
+
+async def main():
+    # This should trip the guardrail
+    try:
+        result = await Runner.run(
+            tutor_agent,
+            "Hello, can you help me solve for x: 2x + 3 = 11?",
+            run_config=config,
+        )
+        print("Guardrail didn't trip - this is unexpected")
+        print(f"Response: {result.final_output.response[:100]}...")
+
+    except InputGuardrailTripwireTriggered:
+        print("Math homework guardrail tripped")
+
+
+asyncio.run(main())
+
 # If i ask about non math related questions i get these
 
 # input
