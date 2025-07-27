@@ -3,7 +3,7 @@ from main import config
 
 
 @function_tool
-def get_available_flights(origin: str, destination: str, date: str) -> str:
+def (origin: str, destination: str, date: str) -> str:
     """Get available flights between two cities on a specific date"""
     # This is a mock implementation
     flights = [
@@ -17,5 +17,25 @@ def get_available_flights(origin: str, destination: str, date: str) -> str:
         result += f"{flight["flight"]} - {flight['departure']} to {flight['arrival']} - ${flight['price']}\n"
 
     return result
+
+@function_tool
+def check_refund_eligibility(booking_reference: str) -> str:
+    """Check if a flight booking is eligible for a refund"""
+    # This is a mock implementation
+    refund_policies = {
+        "ABC123": {"eligible": True, "refund_amount": "$250", "reason": "Cancellation within 24 hours"},
+        "DEF456": {"eligible": False, "reason": "Non-refundable fare"},
+        "GHI789": {"eligible": True, "refund_amount": "$150", "reason": "Partial refund due to fare rules"}
+    }
+    
+    if booking_reference in refund_policies:
+        policy = refund_policies[booking_reference]
+        if policy["eligible"]:
+            return f"Booking {booking_reference} is eligible for a refund of ${policy['refund_amount']}. The reason for the refund is: {policy['reason']}"
+        else:
+            return f"Booking {booking_reference} is not eligible for a refund. The reason is: {policy['reason']}"
+    else:
+        return f"Booking {booking_reference} is not found in our records."    
+     
 
 
