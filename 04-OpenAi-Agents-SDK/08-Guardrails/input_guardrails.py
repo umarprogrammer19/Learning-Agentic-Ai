@@ -8,6 +8,8 @@ from agents import (
     GuardrailFunctionOutput,
     Runner,
 )
+import asyncio
+from config import config, model
 
 
 class MathHomeworkOutput(BaseModel):
@@ -61,6 +63,7 @@ math_guardrail_agent = Agent(
     
     Provide clear reasoning for your decision.
     """,
+    model=model,
     output_type=MathHomeworkOutput,
 )
 
@@ -84,6 +87,7 @@ code_guardrail_agent = Agent(
     
     Provide clear reasoning for your decision.
     """,
+    model=model,
     output_type=CodeAssignmentOutput,
 )
 
@@ -107,8 +111,30 @@ essay_guardrail_agent = Agent(
     
     Provide clear reasoning for your decision and identify the subject if it's an essay request.
     """,
+    model=model,
     output_type=EssayWritingOutput,
 )
+
+
+async def main():
+    result = await Runner.run(
+        math_guardrail_agent,
+        "What is the difference between mitosis and meosis?",
+        run_config=config,
+    )
+    print(result.final_output)
+    result = await Runner.run(
+        code_guardrail_agent,
+        "What is the difference between mitosis and meosis?",
+        run_config=config,
+    )
+    print(result.final_output)
+
+
+# is_math_homework=False reasoning='The question is asking for a general comparison of two biological processes, not for help with a specific math problem. Therefore, it is not math homework.'
+# is_code_assignment=False reasoning='The user is asking a general question about biology, not a coding assignment.'
+
+asyncio.run(main())
 
 
 @input_guardrail
