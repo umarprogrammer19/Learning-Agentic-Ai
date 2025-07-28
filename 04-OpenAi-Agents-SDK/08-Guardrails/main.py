@@ -1,25 +1,30 @@
-from config import config, model
+# Importing necessary modules and components
+from config import config, model  # Configuration and model settings for the agent
 from agents import (
-    Agent,
-    Runner,
-    input_guardrail,
-    RunContextWrapper,
-    TResponseInputItem,
-    GuardrailFunctionOutput,
-    InputGuardrailTripwireTriggered,
+    Agent,  # Agent class to create an intelligent agent
+    Runner,  # Responsible for running the agent with a given input
+    input_guardrail,  # Decorator function to apply guardrails (validation checks) on input
+    RunContextWrapper,  # Context management for agent execution
+    TResponseInputItem,  # Type for individual input items
+    GuardrailFunctionOutput,  # Output format of the guardrail function
+    InputGuardrailTripwireTriggered,  # Exception raised if guardrail is violated
 )
-from pydantic import BaseModel
-import asyncio
+from pydantic import BaseModel  # Pydantic model for input/output validation
+import asyncio  # For asynchronous programming and running the agent
 
 
+# Define the output structure for the Math Homework detector (Pydantic model)
 class MathHomeWorkOutput(BaseModel):
-    is_math_homework: bool
-    reasoning: str
+    is_math_homework: (
+        bool  # Boolean to indicate if the input is related to math homework
+    )
+    reasoning: str  # Explanation of why the input is or isn't math homework
 
 
+# Initialize the Math Homework detector agent
 math_guardrail_agent = Agent(
-    name="Math Homework Detector",
-    instructions="""
+    name="Math Homework Detector",  # Name of the agent
+    instructions="""  # Instructions to define how the agent should behave
     You are a specialized agent that detects if users are asking for help with math homework.
     
     Analyze the input to determine if it's asking for direct solutions to math problems that appear to be homework.
@@ -37,60 +42,63 @@ math_guardrail_agent = Agent(
     
     Provide clear reasoning for your decision.
     """,
-    output_type=MathHomeWorkOutput,
-    model=model,
+    output_type=MathHomeWorkOutput,  # The output type this agent should return
+    model=model,  # Model to generate responses
 )
 
 
+# Define a guardrail function to validate inputs
 @input_guardrail
 async def math_guardrail(
-    ctx: RunContextWrapper, agent: Agent, input: str | list[TResponseInputItem]
+    ctx: RunContextWrapper,  # Context to provide additional information to the agent
+    agent: Agent,  # The agent being run
+    input: (
+        str | list[TResponseInputItem]
+    ),  # Input provided by the user (can be a string or list of response items)
 ) -> GuardrailFunctionOutput:
-    result = await Runner.run(math_guardrail_agent, input)
+    # Run the math homework detection agent on the input
+    result = await Runner.run(math_guardrail_agent, input, context=ctx.context)
 
+    # Print whether the input is considered math homework or not
+    print(result.final_output.is_math_homework)
+
+    # Return the result, including whether the guardrail triggered (i.e., if it's math homework)
     return GuardrailFunctionOutput(
-        output_info=result.final_output,
-        tripwire_triggered=result.final_output.is_math_homework,
+        output_info=result.final_output,  # The final output from the agent
+        tripwire_triggered=not result.final_output.is_math_homework,  # Whether the guardrail has been triggered
     )
 
 
-tutor_agent = Agent(
-    name="Math Expert Agent",
-    instructions="You are a Math Expert Agent. You help student with their questions only math related.",
-    input_guardrails=[math_guardrail],
-    model=model,
+# Define a general math agent that uses the math_guardrail to check inputs
+agent = Agent(
+    name="Math agent",  # Name of the agent
+    instructions="You are a math agent. You help students with their math questions.",  # Basic instructions for the agent
+    input_guardrails=[
+        math_guardrail
+    ],  # Apply the guardrail to this agent to check if the input is math homework
+    model=model,  # Model to generate the agent's responses
 )
 
 
+# Main function to simulate the process of running the agent
 async def main():
-    # This should trip the guardrail
     try:
+        # Example of an input asking for help with a math problem
         result = await Runner.run(
-            tutor_agent,
-            "Hello, can you help me solve for x: 2x + 3 = 11?",
-            run_config=config,
+            agent,  # Running the agent
+            "Hello, can you help me solve for x: 2x + 3 = 11?",  # Math problem input
+            run_config=config,  # Configuration settings for running the agent
         )
-        print("Guardrail didn't trip - this is unexpected")
-        print(f"Response: {result.final_output.response[:100]}...")
 
-    except InputGuardrailTripwireTriggered:
+        # If the guardrail doesn't trip (which is unexpected), print an error message
+        print("Guardrail didn't trip - this is unexpected")
+        print(f"Response: {result.final_output}...")
+
+    except (
+        InputGuardrailTripwireTriggered
+    ):  # If the guardrail trips, i.e., math homework is detected
         print("Math homework guardrail tripped")
 
 
+# Run the main function asynchronously
 asyncio.run(main())
-
-# If i ask about non math related questions i get these
-
-# input
-# what is recursion in python programming
-
-# output
-# is_math_homework=False reasoning='The user is asking a general question about a programming concept (recursion) in Python, not for help with a specific math problem or equation.'
-
-# and if i ask this
-
-# input
-# Find the value of x if 3x + 4 = 9 and x - y = 5 (This is my Math Homework)
-
-# Output
-# is_math_homework=True reasoning='The user explicitly asks to solve for x in a set of equations and indicates that this is a math homework assignment.'
