@@ -1,6 +1,14 @@
 from pydantic import BaseModel
-from agents import Agent, Runner
-from main import config
+from agents import (
+    Agent,
+    Runner,
+    input_guardrail,
+    GuardrailFunctionOutput,
+    RunContextWrapper,
+    TResponseInputItem,
+    InputGuardrailTripwireTriggered,
+)
+from main import config, model
 import asyncio
 
 
@@ -30,6 +38,7 @@ code_guardrail_agent = Agent(
     Provide clear reasoning for your decision.
     """,
     output_type=CodeAssignmentOutput,
+    model=model,
 )
 
 
@@ -56,6 +65,42 @@ asyncio.run(main())
 # output of non-conding question
 # is_coding=False reasoning='The user is asking a general science question about the difference between mitosis and meiosis, which are biological processes. This is not related to computer programming or coding assignments.'
 
-# See There is is is_coding value is changing according to the propmt
+# See There is is is_coding value is changing according to the prompt
 
 # Now make main agent for answering conding questions
+
+
+@input_guardrail
+async def coding_guardrails(
+    ctx: RunContextWrapper[None], agent: Agent, input: str | list[TResponseInputItem]
+) -> GuardrailFunctionOutput:
+    result = await Runner.run(code_guardrail_agent, input, context=ctx.context)
+
+    return GuardrailFunctionOutput(
+        output_info=result.final_output,
+        tripwire_triggered=not result.final_output.is_coding,
+    )
+
+
+agent = Agent(
+    name="Code agent",
+    instructions="You are a coding agent. You help students with their coding questions.",
+    input_guardrails=[coding_guardrails],
+    model=model,
+)
+
+
+# if i ask non-coding question like What is the difference between mitosis and meosis? so the is_conding is False and not opearator do this True If true, an InputGuardrailTripwireTriggered exception is raised, so you can appropriately respond to the user or handle the exception. This will print Sorry i cant answer this question
+async def run():
+    try:
+        result = await Runner.run(
+            agent,
+            "What is the difference between mitosis and meosis?",
+            run_config=config,
+        )
+        print(f"Response: {result.final_output}...")
+    except InputGuardrailTripwireTriggered:
+        print("Sorry i cant answer this question")
+
+
+asyncio.run(run())

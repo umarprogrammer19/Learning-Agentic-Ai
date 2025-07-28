@@ -83,8 +83,6 @@ async def main():
             "Hello, can you help me solve for x: 2x + 3 = 11?",  # Math problem input
             run_config=config,  # Configuration settings for running the agent
         )
-
-        # If the guardrail doesn't trip (which is unexpected), print an error message
         print("Guardrail didn't trip - this is unexpected")
         print(f"Response: {result.final_output}...")
 
