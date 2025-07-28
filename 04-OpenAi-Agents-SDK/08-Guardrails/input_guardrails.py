@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Union
+from typing import Optional, Union, List
 from agents import (
     Agent,
     input_guardrail,
@@ -150,4 +150,36 @@ async def math_homework_guardrail(
         output_info=result.final_output,
         tripwire_triggered=result.final_output.is_math_homework,
         message="I'm sorry, but I can't help with solving math homework problems directly. I'd be happy to explain math concepts or guide you through the problem-solving process instead.",
+    )
+
+
+@input_guardrail
+async def code_assignment_guardrail(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: Union[str, List[TResponseInputItem]],
+) -> GuardrailFunctionOutput:
+    """Detect and block requests for coding assignment solutions."""
+    result = await Runner.run(code_guardrail_agent, input, context=ctx.context)
+
+    return GuardrailFunctionOutput(
+        output_info=result.final_output,
+        tripwire_triggered=result.final_output.is_code_assignment,
+        message="I'm sorry, but I can't write code for assignments directly. I'd be happy to explain programming concepts, help debug issues, or guide you through the development process instead.",
+    )
+
+
+@input_guardrail
+async def essay_writing_guardrail(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: Union[str, List[TResponseInputItem]],
+) -> GuardrailFunctionOutput:
+    """Detect and block requests for writing essays."""
+    result = await Runner.run(essay_guardrail_agent, input, context=ctx.context)
+
+    return GuardrailFunctionOutput(
+        output_info=result.final_output,
+        tripwire_triggered=result.final_output.is_essay_request,
+        message="I'm sorry, but I can't write essays or papers for academic assignments. I'd be happy to help with brainstorming ideas, creating outlines, or providing feedback on your writing instead.",
     )
