@@ -98,3 +98,33 @@ async def main():
 asyncio.run(main())
 
 
+# How the Code Works:
+# Guardrail Mechanism:
+
+# The guardrail checks if the user's input involves math homework.
+
+# It uses a set of conditions (e.g., solving for variables, equations, step-by-step math problems) to decide whether the input is math-related or not.
+
+# The output of the guardrail is an object containing:
+
+# is_math_homework: A boolean (True or False) indicating if the input is math homework.
+
+# reasoning: A string explaining why the input is or isn't math homework.
+
+# Math Homework Detection:
+
+# If the input asks for help with solving mathematical problems (e.g., "solve for x", "calculate y"), it is classified as math homework (is_math_homework=True).
+
+# The guardrail also checks if the input contains specific language like "find the value of" or "solve for", which are clear indicators of homework-related math problems.
+
+# Non-Math Question:
+
+# If the input doesn't match the math homework conditions (like asking about programming concepts or general math principles), the agent flags the question as not math homework (is_math_homework=False).
+
+# The reasoning clearly explains why the input isn't math homework (e.g., the question is about recursion in Python).
+
+# Guardrail Tripwire:
+
+# If the input involves math homework, the InputGuardrailTripwireTriggered exception might be triggered to stop further processing, depending on the system's configuration. This ensures that the agent doesn't directly respond to homework-related questions (as per the instructions to prevent solving homework for students).
+
+# For non-math questions, the guardrail function does not trigger this exception, and the agent proceeds with normal processing (i.e., explaining concepts or providing general knowledge).
