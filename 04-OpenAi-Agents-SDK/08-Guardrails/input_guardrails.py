@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
-from typing import Optional
-from agents import Agent
+from typing import Optional, Union
+from agents import (
+    Agent,
+    input_guardrail,
+    RunContextWrapper,
+    TResponseInputItem,
+    GuardrailFunctionOutput,
+    Runner,
+)
 
 
 class MathHomeworkOutput(BaseModel):
@@ -103,3 +110,18 @@ essay_guardrail_agent = Agent(
     output_type=EssayWritingOutput,
 )
 
+
+@input_guardrail
+async def math_homework_guardrail(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: Union[str | list[TResponseInputItem]],
+) -> GuardrailFunctionOutput:
+    """Detect and block requests for math homework help."""
+    result = await Runner.run(math_guardrail_agent, input, context=ctx.context)
+
+    return GuardrailFunctionOutput(
+        output_info=result.final_output,
+        tripwire_triggered=result.final_output.is_math_homework,
+        message="I'm sorry, but I can't help with solving math homework problems directly. I'd be happy to explain math concepts or guide you through the problem-solving process instead.",
+    )
