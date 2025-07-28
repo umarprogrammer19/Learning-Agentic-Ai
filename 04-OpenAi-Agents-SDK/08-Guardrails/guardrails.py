@@ -99,8 +99,8 @@ async def run():
             run_config=config,
         )
         print(f"Response: {result.final_output}...")
-    except InputGuardrailTripwireTriggered:
-        print("Sorry i cant answer this question")
+    except InputGuardrailTripwireTriggered as e:
+        print(e.guardrail_result.output.output_info.reasoning)
 
 
 asyncio.run(run())
