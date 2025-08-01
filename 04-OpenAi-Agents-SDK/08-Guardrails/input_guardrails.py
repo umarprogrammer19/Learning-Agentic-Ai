@@ -11,7 +11,7 @@ from agents import (
 import asyncio
 from config import config, model
 
-
+# Math
 class MathHomeworkOutput(BaseModel):
     is_math_homework: bool = Field(
         ..., description="Whether the query appears to be math homework"
