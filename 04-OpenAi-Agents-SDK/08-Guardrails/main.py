@@ -92,7 +92,6 @@ async def main():
         print("Math homework guardrail tripped")
 
 
-# Run the main function asynchronously
 asyncio.run(main())
 
 
