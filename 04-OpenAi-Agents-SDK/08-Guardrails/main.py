@@ -1,7 +1,7 @@
 from config import config, model
 from agents import (
     Agent,
-    Runner,
+    Runner, # For Running 
     input_guardrail,  # Decorator function to apply guardrails (validation checks) on input
     RunContextWrapper,  # Context management for agent execution
     TResponseInputItem,  # Type for individual input items
@@ -11,7 +11,7 @@ from agents import (
 from pydantic import BaseModel
 import asyncio
 
-
+# Math Class 
 class MathHomeWorkOutput(BaseModel):
     is_math_homework: bool
     reasoning: str
