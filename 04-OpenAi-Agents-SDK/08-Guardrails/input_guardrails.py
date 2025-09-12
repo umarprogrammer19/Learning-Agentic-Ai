@@ -20,7 +20,7 @@ class MathHomeworkOutput(BaseModel):
         ..., description="Explanation of why this is or isn't math homework"
     )
 
-
+# CodeAssignmentOutput class
 class CodeAssignmentOutput(BaseModel):
     is_code_assignment: bool = Field(
         ..., description="Whether the query appears to be a coding assignment"
@@ -29,7 +29,7 @@ class CodeAssignmentOutput(BaseModel):
         ..., description="Explanation of why this is or isn't a coding assignment"
     )
 
-
+# for EssayWritingOutput
 class EssayWritingOutput(BaseModel):
     is_essay_request: bool = Field(
         ..., description="Whether the query appears to be asking for an essay"
@@ -40,7 +40,6 @@ class EssayWritingOutput(BaseModel):
     subject: Optional[str] = Field(
         None, description="The subject of the essay if applicable"
     )
-
 
 # Create specialized guardrail agents
 math_guardrail_agent = Agent(
@@ -67,6 +66,7 @@ math_guardrail_agent = Agent(
     output_type=MathHomeworkOutput,
 )
 
+# code_guardrail_agent
 code_guardrail_agent = Agent(
     name="Code Assignment Detector",
     instructions="""
