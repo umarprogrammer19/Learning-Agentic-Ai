@@ -6,11 +6,13 @@ load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
 
+# For setup client
 external_client = AsyncOpenAI(
     api_key=api_key,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
 )
 
+# model config
 model = OpenAIChatCompletionsModel(
     openai_client=external_client, model="gemini-2.0-flash"
 )
