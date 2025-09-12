@@ -4,13 +4,14 @@ from datetime import datetime
 from uuid import uuid4
 from typing import List, Optional
 
+# Initialize Fast API App
 app = FastAPI(
     title="DACA Chatbot App",
     description="A FastAPI-based API for a chatbot in the DACA tutorial series",
     version="0.1.0",
 )
 
-
+# For Type Validation
 class MetaData(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     session_id: str = Field(default_factory=lambda: str(uuid4()))
