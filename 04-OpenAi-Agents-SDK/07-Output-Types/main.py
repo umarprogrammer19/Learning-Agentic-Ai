@@ -42,6 +42,7 @@ calendar_extractor = Agent(
     If a detail is not provided in the text, omit that field from your response.
     """,
     output_type=CalendarEvent,  # Expected output is a CalendarEvent object
+    # for gemini
     model=LitellmModel(model="gemini/gemini-2.0-flash", api_key=api_key),
 )
 
@@ -82,6 +83,7 @@ advanced_calendar_extractor = Agent(
     """,
     output_type=CalendarEvent,
     tools=[validate_date],  # Register the date validation tool for use within the agent
+    # for gemini
     model=LitellmModel(model="gemini/gemini-2.0-flash", api_key=api_key),
 )
 
