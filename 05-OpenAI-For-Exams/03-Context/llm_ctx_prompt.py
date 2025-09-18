@@ -3,17 +3,13 @@ from config import model
 
 agent = Agent(
     name="Assistant",
-    instructions=(
-        "You are a helpful Assistant"
-        "Extra Information"
-        "The Weather of karachi is 30 Degree"
-    ),
+    instructions="You are a helpful Assistant",
     model=model,
 )
 
 result = Runner.run_sync(
     starting_agent=agent,
-    input="What is a Weather of Karachi?",
+    input="wish a happy birthday to my friend Ammar",
 )
 
 print(result.final_output)
