@@ -143,9 +143,90 @@ async def main():
     query = "Tell me about artificial intelligence."
 
     for name, agent in agents.items():
-        result = Runner.run_sync(agent, query)
+        result = await Runner.run(agent, query)
         print(f"\n{name} Agent:")
         print(result.final_output[:150] + "...")
+
+        # 🎯 Example 5: Understanding Shared References
+    print("\n🎯 Example 5: Understanding Shared References")
+    print("-" * 40)
+
+    # Demonstrate shared references
+    original_agent = Agent(
+        name="Original",
+        tools=[calculate_area],
+        instructions="You are helpful.",
+        model=model,
+    )
+
+    # Clone without new tools list
+    shared_clone = original_agent.clone(
+        name="SharedClone", instructions="You are creative."
+    )
+
+    # Add tool to original
+    @function_tool
+    def new_tool() -> str:
+        return "I'm a new tool!"
+
+    original_agent.tools.append(new_tool)
+
+    # Check if clone also has the new tool
+    print("Original tools:", len(original_agent.tools))  # 2
+    print("Shared clone tools:", len(shared_clone.tools))  # 2 (shared!)
+
+    # Create independent clone
+    independent_clone = original_agent.clone(
+        name="IndependentClone",
+        tools=[calculate_area],  # New list
+        instructions="You are independent.",
+    )
+
+    original_agent.tools.append(new_tool)
+    print("Independent clone tools:", len(independent_clone.tools))  # 1 (independent!)
+
+    print("\n💡 Notice: Shared clone has the same tools as original,")
+    print("   while independent clone has its own tool list!")
+
+    # 🎯 Example 6: Practical Agent Family
+    print("\n🎯 Example 6: Practical Agent Family")
+    print("-" * 40)
+
+    # Create a base agent for different writing styles
+    base_writer = Agent(
+        name="BaseWriter",
+        instructions="You are a helpful writer.",
+        model_settings=ModelSettings(temperature=0.7),
+        model=model,
+    )
+
+    # Create writing style variants
+    writing_agents = {
+        "Poet": base_writer.clone(
+            name="Poet",
+            instructions="You are a poet. Respond in verse.",
+            model_settings=ModelSettings(temperature=0.9),
+        ),
+        "Scientist": base_writer.clone(
+            name="Scientist",
+            instructions="You are a scientist. Be precise and factual.",
+            model_settings=ModelSettings(temperature=0.1),
+        ),
+        "Chef": base_writer.clone(
+            name="Chef", instructions="You are a chef. Talk about food and cooking."
+        ),
+    }
+
+    # Test all writing styles
+    query = "What is love?"
+
+    for name, agent in writing_agents.items():
+        result = await Runner.run(agent, query)
+        print(f"\n{name}:")
+        print(result.final_output[:100] + "...")
+
+    print("\n🎉 You've learned Agent Cloning!")
+    print("💡 Try creating your own agent families!")
 
 
 asyncio.run(main())
