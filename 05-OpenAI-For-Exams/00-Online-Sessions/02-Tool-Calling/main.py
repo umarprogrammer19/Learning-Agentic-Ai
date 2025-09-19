@@ -1,36 +1,55 @@
-from agents import (
-    Agent,
-    Runner,
-    AsyncOpenAI,
-    OpenAIChatCompletionsModel,
-    enable_verbose_stdout_logging,
-)
-from dotenv import load_dotenv
-import os
+from agents import Agent, Runner, function_tool
+from config import model
 from rich import print
 
-load_dotenv()
-enable_verbose_stdout_logging()
+# 1) function tool use to perform a agent action
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-#! 1) TypeError: Agent.__init__() missing 1 required positional argument: 'name' it means name is required on Agent Class
-#! 2) OpenAI Agents SDK Uses By Default Model gpt-4.1
-#! 3) OpenAI Agents SDK Uses "Responses API"
-#! 4) OPENAI_API_KEY is not set, skipping trace export
-#! 5) enable_verbose_stdout_logging() Show Workflow On Terminal
+@function_tool
+def send_mail(email: str) -> str:
+    print(f"Send Mail Tool Caled with email {email}")
+    return f"Email Sent to {email} Successfully"
 
-external_client = AsyncOpenAI(
-    api_key=GEMINI_API_KEY,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+
+@function_tool
+def calculation(a: int, b: int) -> int:
+    print(f"calculation Tool Called with number {a,b}")
+    return a + b
+
+
+@function_tool
+def calculation(a: int, b: int) -> int:
+    print(f"calculation Tool Called with number {a,b}")
+    return a - b
+
+
+@function_tool
+def calculation(a: int, b: int) -> int:
+    print(f"calculation Tool Called with number {a,b}")
+    return a * b
+
+
+agent = Agent(
+    name="Email Assistant",
+    instructions="You are a helpful assistant developed for sending a mail, use send_mail to send the emails any emails do you want whether it is empty or not or with invitition or anything else.",
+    model=model,
+    tools=[send_mail],
 )
 
-model = OpenAIChatCompletionsModel(
-    model="gemini-2.5-flash",
-    openai_client=external_client,
+result = Runner.run_sync(
+    agent,
+    "This is my friend's email uhhfj0345@gmail.com, I want to send the birthday party invitition scheduled at 21 Sep 5PM on My House could you send the email?",
 )
 
-agent = Agent(name="Assistant", model=model)
+calculation_agent = Agent(
+    name="Add Assistant",
+    instructions="You are a helpful assistant developed for calculation use calculation tool for calculation if needed other wise use llm for response.",
+    model=model,
+    tools=[calculation],
+)
 
-result = Runner.run_sync(agent, "What is the capital of Pakistan?")
+result_add = Runner.run_sync(
+    calculation_agent,
+    "9 - 10",
+)
 
-print(result.final_output)
+print("Final Result", result_add.final_output)
