@@ -14,6 +14,7 @@ async def main():
     """Learn Model Settings with simple examples."""
     # 🎯 Example 1: Temperature (Creativity Control)
     print("❄️🔥 Temperature Settings")
+    print("-" * 30)
 
     agent_cold = Agent(
         name="Cold Agent",
@@ -41,5 +42,47 @@ async def main():
     print("\nHot Agent (Temperature = 1.9):")
     result_hot = await Runner.run(agent_hot, question)
     print(result_hot.final_output)
+
+    # 🎯 Example 2: Tool Choice
+    print("\n🔧 Tool Choice Settings")
+    print("-" * 30)
+
+    agent_auto = Agent(
+        name="Auto",
+        tools=[calculate_area],
+        model_settings=ModelSettings(tool_choice="auto"),
+        model=model,
+    )
+
+    agent_required = Agent(
+        name="Required",
+        tools=[calculate_area],
+        model_settings=ModelSettings(tool_choice="required"),
+        model=model,
+    )
+
+    agent_none = Agent(
+        name="None",
+        tools=[calculate_area],
+        model_settings=ModelSettings(tool_choice="none"),
+        model=model,
+    )
+
+    question = "What's the area of a 5x3 rectangle?"
+
+    # 💡 Notice: Auto = decides, Required = must use tool
+
+    print("Auto Tool Choice:")
+    result_auto = await Runner.run(agent_auto, question)
+    print(result_auto.final_output)
+
+    print("\nRequired Tool Choice:")
+    result_required = await Runner.run(agent_required, question)
+    print(result_required.final_output)
+
+    print("\nNone Tool Choice:")
+    result_none = await Runner.run(agent_none, question)
+    print(result_none.final_output)
+
 
 asyncio.run(main())
