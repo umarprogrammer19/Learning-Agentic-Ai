@@ -4,7 +4,7 @@ from typing import Callable
 from agents import Agent, Runner, function_tool, RunContextWrapper, ItemHelpers
 from openai.types.responses import ResponseTextDeltaEvent
 from config import model
-
+from rich import print
 
 @dataclass
 class UserContext:
@@ -44,7 +44,10 @@ async def call_agent():
         context=user_context,
     )
     async for event in output.stream_events():
-        print(event)
+        if event.type == "raw_response_event" and isinstance(
+            event.data, ResponseTextDeltaEvent
+        ):
+            print(event.data)
 
 
 asyncio.run(call_agent())
