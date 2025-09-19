@@ -4,6 +4,7 @@ from rich import print
 
 # 1) function tool use to perform a agent action
 
+
 @function_tool
 def send_mail(email: str) -> str:
     print(f"Send Mail Tool Caled with email {email}")
@@ -22,11 +23,16 @@ def calculation(a: int, b: int) -> int:
     return a - b
 
 
-@function_tool
+@function_tool(
+    name_override="multiplication_tool", description_override="Overrided Description"
+)
 def calculation(a: int, b: int) -> int:
+    """This is calculation tool to perform calculation"""
     print(f"calculation Tool Called with number {a,b}")
     return a * b
 
+
+print(calculation)
 
 agent = Agent(
     name="Email Assistant",
@@ -41,15 +47,15 @@ result = Runner.run_sync(
 )
 
 calculation_agent = Agent(
-    name="Add Assistant",
-    instructions="You are a helpful assistant developed for calculation use calculation tool for calculation if needed other wise use llm for response.",
+    name="Calculation Assistant",
+    instructions="You are a helpful assistant developed for calculation use calculation tool for calculation.",
     model=model,
     tools=[calculation],
 )
 
 result_add = Runner.run_sync(
     calculation_agent,
-    "9 - 10",
+    "9 and 10",
 )
 
 print("Final Result", result_add.final_output)
