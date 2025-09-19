@@ -50,7 +50,7 @@ calculation_agent = Agent(
     name="Calculation Assistant",
     instructions="You are a helpful assistant developed for calculation use calculation tool for calculation.",
     model=model,
-    tools=[calculation],
+    tools=[calculationz],
 )
 
 result_add = Runner.run_sync(
