@@ -16,3 +16,20 @@ def fetch_weather(city: str) -> str:
         return f"The weather in {city} is {data['current']['temp_c']}°C with {data['current']['condition']['text']}."
     else:
         return "Sorry, I couldn't fetch the weather data."
+
+
+weather_agent: Agent = Agent(
+    name="Weather Assistant",
+    instructions="You are a helpful assistant.",
+    model=model,
+    tools=[fetch_weather],
+)
+
+message = input("Enter Prompt: ").strip()
+
+result = Runner.run_sync(
+    weather_agent,
+    f"{message}?",
+)
+
+print(result.final_output)
