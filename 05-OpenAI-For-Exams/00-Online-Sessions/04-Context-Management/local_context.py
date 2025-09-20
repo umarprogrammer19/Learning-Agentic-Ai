@@ -5,13 +5,10 @@ from rich import print
 import asyncio
 
 # Local context m secret information store hoti hai jo llm k pass nh jati
-
-
 @dataclass
 class UserInfo:
     name: str
     uid: int
-
 
 @function_tool
 def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:
