@@ -1,0 +1,8 @@
+# Context ak information hoti hai jiske behalf par LLM decide karta hai k user ko kia response dena hai
+# Local Context m secret information hoti hai
+# LLM Context jo information LLM k pass hoti hai 
+# LLM ko pass karne k 4 tareeke hoty hai 
+1) Intructions
+2) Prompt 
+3) funtion tools
+4) Hosted Tools
