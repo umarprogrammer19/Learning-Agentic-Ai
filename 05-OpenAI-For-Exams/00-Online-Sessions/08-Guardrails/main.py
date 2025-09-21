@@ -1,80 +1,30 @@
-from agents import (
-    Agent,
-    Runner,
-    input_guardrail,
-    RunContextWrapper,
-    GuardrailFunctionOutput,
-    InputGuardrailTripwireTriggered,
-)
-import asyncio
+from agents import Agent, Runner
 from pydantic import BaseModel
 from config import model
+import asyncio
 
 
 class MathHomeWorkOutput(BaseModel):
     is_math_homework: bool
-    reasoning: str
+    resoning: str
 
 
 math_guardrail_agent = Agent(
-    name="Math Homework Detector",
-    instructions="""  # Instructions to define how the agent should behave
-    You are a specialized agent that detects if users are asking for help with math homework.
-    
-    Analyze the input to determine if it's asking for direct solutions to math problems that appear to be homework.
-    
-    Consider these as math homework:
-    - Explicit requests to solve equations or math problems
-    - Questions that ask for step-by-step solutions to math problems
-    - Requests that use phrases like "solve for x" or similar academic language
-    
-    Don't consider these as math homework:
-    - General questions about math concepts
-    - Requests for explanations of mathematical principles
-    - Questions about how to approach a type of problem (without asking for the specific solution)
-    - Real-world math applications (like calculating a tip or mortgage payment)
-    
-    Provide clear reasoning for your decision.
-    """,
+    name="Math Agent",
+    instructions="You are a assistant for giving an answer of a math homework or you are here to verify a user input for the input is math related or not..",
     output_type=MathHomeWorkOutput,
     model=model,
 )
 
 
-@input_guardrail
-async def math_guardrail(
-    ctx: RunContextWrapper,
-    agent: Agent,
-    input,
-) -> GuardrailFunctionOutput:
-    result = await Runner.run(math_guardrail_agent, input, context=ctx.context)
-
-    print(result.final_output.is_math_homework)
-
-    return GuardrailFunctionOutput(
-        output_info=result.final_output,
-        tripwire_triggered=result.final_output.is_math_homework,
+async def main():
+    result = await Runner.run(
+        math_guardrail_agent,
+        # "What is the value of x in 3x2 + 8x - 9 = 19",
+        "What is javascript?",
     )
 
-
-agent = Agent(
-    name="Math agent",
-    instructions="You are a math agent. You help students with their math questions.",
-    input_guardrails=[math_guardrail],
-    model=model,
-)
-
-
-async def main():
-    try:
-        result = await Runner.run(
-            agent,
-            "Hello, can you help me solve for x: 2x + 3 = 11?",
-        )
-        print(f"Response: {result.final_output}...")
-
-    except InputGuardrailTripwireTriggered:
-        print("I cant help you with math question")
+    print(result.final_output)
 
 
 asyncio.run(main())
