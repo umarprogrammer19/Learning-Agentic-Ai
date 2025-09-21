@@ -11,10 +11,10 @@ class UserInfo:
     uid: int
 
 @function_tool
-def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:
+def fetch_user_age(ctx: RunContextWrapper[UserInfo]) -> str:
     """Fetch the age of the user"""
-    print("Fetch User Age Tool Called With Name", wrapper.context.name)
-    return f"The User {wrapper.context.name} is 17 Years Old"
+    print("Fetch User Age Tool Called With Name", ctx.context.name)
+    return f"The User {ctx.context.name} is 17 Years Old"
 
 
 async def main():
