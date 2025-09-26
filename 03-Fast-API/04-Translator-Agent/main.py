@@ -84,7 +84,7 @@ orchestrator = Agent(
 
 if __name__ == "__main__":
     topic = "Photosynthesis"
-    target_lang = "en"
+    target_lang = "urdu"
 
     user_prompt = (
         f"Topic: {topic}\n"
