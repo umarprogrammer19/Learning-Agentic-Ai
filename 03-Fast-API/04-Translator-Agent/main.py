@@ -49,7 +49,7 @@ content_agent = Agent(
 
 # Agent 2: Translator that MUST call the Google Translate tool
 translator_agent = Agent(
-    name="TranslatorAgent",
+    name="Translator Agent",
     instructions=(
         "You translate the given 'text' into the 'target_lang' ISO code strictly by calling the 'translate_text' tool. "
         "Always return ONLY the translated text—no preface, no extra commentary."
@@ -92,6 +92,6 @@ if __name__ == "__main__":
         "First generate explanation, then translate if needed."
     )
 
-    result = Runner.run(orchestrator, input=user_prompt, max_turns=6)
+    result = Runner.run_sync(orchestrator, input=user_prompt, max_turns=6)
     print("\n--- Final Answer ---\n")
     print(result.final_output)
