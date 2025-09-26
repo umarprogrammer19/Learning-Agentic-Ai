@@ -3,6 +3,7 @@ from typing import Optional
 import os
 import requests
 
+
 @function_tool
 def translate_text(
     text: str, target_lang: str, source_lang: Optional[str] = None
