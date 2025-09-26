@@ -1,7 +1,7 @@
 from agents import Agent, Runner, function_tool, ModelSettings
 from typing import Optional
 import os
-
+import requests
 
 @function_tool
 def translate_text(
@@ -25,3 +25,11 @@ def translate_text(
     params = {"key": api_key, "q": text, "target": target_lang}
     if source_lang:
         params["source"] = source_lang
+
+    try:
+        resp = requests.post(url, params=params, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        return data["data"]["translations"][0]["translatedText"]
+    except Exception as e:
+        raise RuntimeError(f"Translate API error: {getattr(e, 'args', [str(e)])[0]}")
