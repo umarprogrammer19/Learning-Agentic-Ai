@@ -59,3 +59,25 @@ translator_agent = Agent(
     # Force tool use so the LLM doesn't try to translate by itself
     model_settings=ModelSettings(tool_choice="required"),
 )
+
+# Orchestrator: routes to sub-agents as tools (manager pattern)
+orchestrator = Agent(
+    name="Orchestrator",
+    instructions=(
+        "You are a bilingual study assistant. Follow this plan strictly:\n"
+        "1) Call generate_explanation to produce an English explanation of the requested topic.\n"
+        "2) If the target language is not 'en', call translate_explanation to translate that exact text.\n"
+        "3) Return the final text only (no markdown), in the target language. If target is 'en', return the English text."
+    ),
+    tools=[
+        content_agent.as_tool(
+            tool_name="generate_explanation",
+            tool_description="Create a short English explanation of the user's topic.",
+        ),
+        translator_agent.as_tool(
+            tool_name="translate_explanation",
+            tool_description="Translate text to the target_lang by calling the translate_text tool.",
+        ),
+    ],
+    model=model,
+)
