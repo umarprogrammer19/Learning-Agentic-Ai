@@ -4,4 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "fastapi>=0.117.1",
+    "google-cloud-translate>=3.21.1",
+    "openai-agents>=0.3.2",
+    "uvicorn>=0.37.0",
+]
