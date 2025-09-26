@@ -81,3 +81,17 @@ orchestrator = Agent(
     ],
     model=model,
 )
+
+if __name__ == "__main__":
+    topic = "Photosynthesis"
+    target_lang = "ur"
+
+    user_prompt = (
+        f"Topic: {topic}\n"
+        f"Target language: {target_lang}\n"
+        "First generate explanation, then translate if needed."
+    )
+
+    result = Runner.run(orchestrator, input=user_prompt, max_turns=6)
+    print("\n--- Final Answer ---\n")
+    print(result.final_output)
