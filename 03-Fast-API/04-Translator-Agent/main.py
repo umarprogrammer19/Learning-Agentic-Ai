@@ -20,3 +20,8 @@ def translate_text(
     api_key = os.environ.get("GOOGLE_TRANSLATE_API_KEY")
     if not api_key:
         raise RuntimeError("GOOGLE_TRANSLATE_API_KEY not set.")
+
+    url = "https://translation.googleapis.com/language/translate/v2"
+    params = {"key": api_key, "q": text, "target": target_lang}
+    if source_lang:
+        params["source"] = source_lang
